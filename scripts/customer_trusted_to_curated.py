@@ -21,14 +21,14 @@ job.init(args['JOB_NAME'], args)
 # Script generated for node Customer Trusted
 CustomerTrusted_node1776205799653 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="customer_trusted", transformation_ctx="CustomerTrusted_node1776205799653")
 
-# Script generated for node Accelerometer Landing
-AccelerometerLanding_node1776205750053 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="accelerometer_landing", transformation_ctx="AccelerometerLanding_node1776205750053")
+# Script generated for node Accelerometer Trusted
+AccelerometerTrusted_node1776205750053 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="accelerometer_trusted", transformation_ctx="AccelerometerTrusted_node1776205750053")
 
-# Script generated for node Join
-Join_node1776205933938 = Join.apply(frame1=AccelerometerLanding_node1776205750053, frame2=CustomerTrusted_node1776205799653, keys1=["user"], keys2=["email"], transformation_ctx="Join_node1776205933938")
+# Script generated for node Join Customer Trusted to Accelerometer Trusted
+JoinCustomerTrustedtoAccelerometerTrusted_node1776205933938 = Join.apply(frame1=CustomerTrusted_node1776205799653, frame2=AccelerometerTrusted_node1776205750053, keys1=["email"], keys2=["user"], transformation_ctx="JoinCustomerTrustedtoAccelerometerTrusted_node1776205933938")
 
 # Script generated for node Drop Fields and Duplicates
-SqlQuery1744 = '''
+SqlQuery2176 = '''
 SELECT DISTINCT customername,
     email,
     phone,
@@ -41,7 +41,7 @@ SELECT DISTINCT customername,
     sharewithfriendsasofdate
 FROM myDataSource;
 '''
-DropFieldsandDuplicates_node1776206519476 = sparkSqlQuery(glueContext, query = SqlQuery1744, mapping = {"myDataSource":Join_node1776205933938}, transformation_ctx = "DropFieldsandDuplicates_node1776206519476")
+DropFieldsandDuplicates_node1776206519476 = sparkSqlQuery(glueContext, query = SqlQuery2176, mapping = {"myDataSource":JoinCustomerTrustedtoAccelerometerTrusted_node1776205933938}, transformation_ctx = "DropFieldsandDuplicates_node1776206519476")
 
 # Script generated for node Customer Curated
 CustomerCurated_node1776206202315 = glueContext.getSink(path="s3://christian-data-lakehouse/customer/curated/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=[], enableUpdateCatalog=True, transformation_ctx="CustomerCurated_node1776206202315")
